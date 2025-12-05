@@ -8,10 +8,11 @@ defmodule Aoc.Day3Pt2 do
     |> Enum.sum()
   end
 
-  defp largest_joltage([], left, right), do: left * 10 + right
-
   defp largest_joltage(numbers, left, right) do
     case numbers do
+      [] ->
+        left * 10 + right
+
       [last] ->
         largest_joltage([], left, max(last, right))
 
