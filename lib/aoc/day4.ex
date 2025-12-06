@@ -2,9 +2,8 @@ defmodule Aoc.Day4 do
   def solve_pt1(input) do
     parsed =
       input
-      |> Stream.map(fn i ->
-        i |> String.trim() |> String.graphemes()
-      end)
+      |> Stream.map(&String.trim/1)
+      |> Stream.map(&String.graphemes/1)
 
     map =
       parsed
