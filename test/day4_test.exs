@@ -10,7 +10,7 @@ defmodule Aoc.Day4Test do
       "....."
     ]
 
-    assert Aoc.Day4.solve(input) == 3
+    assert Aoc.Day4.solve_pt1(input) == 3
   end
 
   test "day_4_part_2" do
@@ -22,6 +22,6 @@ defmodule Aoc.Day4Test do
       "....."
     ]
 
-    assert Aoc.Day4.solve(input) == 6
+    assert Aoc.Day4Pt2.solve_pt1(input) == 6
   end
 end

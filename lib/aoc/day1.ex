@@ -1,5 +1,5 @@
 defmodule Aoc.Day1 do
-  def solve(lines) do
+  def solve_pt1(lines) do
     lines
     |> Stream.map(&parse_line/1)
     |> Stream.scan({50, 0}, &get_crossing_counts/2)

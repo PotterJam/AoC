@@ -5,10 +5,12 @@ defmodule Mix.Tasks.Day do
     case parse_args(args) do
       {:ok, day, part} ->
         input_file = "day-#{day}-input.txt"
-        module = get_module(day, part)
+        module = Module.concat(Aoc, "Day#{day}")
+        func = if part == 1, do: :solve_pt1, else: :solve_pt2
 
         if Code.ensure_loaded?(module) do
-          File.stream!(input_file) |> module.solve() |> IO.inspect()
+          input = File.stream!(input_file)
+          apply(module, func, [input]) |> IO.inspect()
         else
           IO.puts("Module #{inspect(module)} not found")
         end
@@ -32,7 +34,4 @@ defmodule Mix.Tasks.Day do
   end
 
   defp parse_args(_), do: :error
-
-  defp get_module(day, 1), do: Module.concat(Aoc, "Day#{day}")
-  defp get_module(day, 2), do: Module.concat(Aoc, "Day#{day}Pt2")
 end

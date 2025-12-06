@@ -1,5 +1,5 @@
 defmodule Aoc.Day4 do
-  def solve(input) do
+  def solve_pt1(input) do
     parsed =
       input
       |> Stream.map(fn i ->

@@ -1,5 +1,5 @@
 defmodule Aoc.Day2 do
-  def solve(input) do
+  def solve_pt1(input) do
     input
     |> String.split(",")
     |> Enum.flat_map(fn range_str ->
