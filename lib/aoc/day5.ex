@@ -35,6 +35,35 @@ defmodule Aoc.Day5 do
     {ranges, ids}
   end
 
-  def solve_pt2(_input) do
+  def solve_pt2(input) do
+    {ranges, _} = parse(input)
+
+    sorted = ranges |> Enum.sort_by(&elem(&1, 0))
+
+    sorted
+    |> combine_ranges()
+    |> Enum.sum_by(fn {from, to} -> to - from + 1 end)
+  end
+
+  defp combine_ranges([]), do: []
+
+  defp combine_ranges([{_, to} = curr | rest]) do
+    overlapping_ranges =
+      rest
+      |> Enum.take_while(fn {next_from, _} ->
+        next_from <= to
+      end)
+
+    merged_ranges =
+      overlapping_ranges
+      |> Enum.filter(fn {_, next_to} -> next_to > to end)
+      |> Enum.map(fn
+        {_, next_to} -> {to + 1, next_to}
+      end)
+
+    rest_without_overlap = rest |> Enum.drop(Enum.count(overlapping_ranges))
+    new_rest = Enum.concat(merged_ranges, rest_without_overlap)
+
+    [curr | combine_ranges(new_rest)]
   end
 end
