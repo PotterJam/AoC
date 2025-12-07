@@ -38,7 +38,7 @@ defmodule Aoc.Day5 do
   def solve_pt2(input) do
     {ranges, _} = parse(input)
 
-    sorted = ranges |> Enum.sort_by(&elem(&1, 0))
+    sorted = ranges |> Enum.sort_by(fn {from, _} -> from end)
 
     sorted
     |> combine_ranges()
