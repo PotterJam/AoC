@@ -48,22 +48,12 @@ defmodule Aoc.Day5 do
   defp combine_ranges([]), do: []
 
   defp combine_ranges([{_, to} = curr | rest]) do
-    overlapping_ranges =
-      rest
-      |> Enum.take_while(fn {next_from, _} ->
-        next_from <= to
-      end)
+    overlapping_ranges = Enum.take_while(rest, fn {next_from, _} -> next_from <= to end)
 
     merged_ranges =
-      overlapping_ranges
-      |> Enum.filter(fn {_, next_to} -> next_to > to end)
-      |> Enum.map(fn
-        {_, next_to} -> {to + 1, next_to}
-      end)
+      for {_, next_to} <- overlapping_ranges, next_to > to, do: {to + 1, next_to}
 
     rest_without_overlap = rest |> Enum.drop(Enum.count(overlapping_ranges))
-    new_rest = Enum.concat(merged_ranges, rest_without_overlap)
-
-    [curr | combine_ranges(new_rest)]
+    [curr | combine_ranges(merged_ranges ++ rest_without_overlap)]
   end
 end
