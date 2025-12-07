@@ -6,7 +6,7 @@ defmodule Aoc.Day6 do
       |> Stream.take_while(&(&1 != ""))
       |> Enum.map(&String.split/1)
 
-    {operations, str_numbers} = List.pop_at(parsed, -1) |> IO.inspect()
+    {operations, str_numbers} = List.pop_at(parsed, -1)
     numbers = Enum.map(str_numbers, fn nums -> Enum.map(nums, &String.to_integer/1) end)
 
     transposed = Enum.zip_with(numbers, &Function.identity/1)
