@@ -24,17 +24,32 @@ defmodule Aoc.Day6 do
     parsed =
       input
       |> Stream.take_while(&(&1 != ""))
-      |> Stream.map(&String.graphemes/1)
+      |> Stream.map(&String.trim_trailing/1)
+      |> Enum.map(&String.graphemes/1)
 
-    Enum.zip_with(parsed, &Function.identity/1)
-    |> Stream.chunk_every(3, 4)
-    |> Stream.map(fn col ->
-      op = Enum.map(col, &Enum.at(&1, -1)) |> Enum.join() |> String.trim()
-      {op, col}
-    end)
-    |> Stream.filter(fn {op, _} -> op in ["+", "*"] end)
+    max_len = parsed |> Enum.max_by(&length/1) |> length()
+
+    pad_enum = fn enum ->
+      enum ++ (Stream.cycle([" "]) |> Enum.take(max_len - length(enum)))
+    end
+
+    padded = Enum.map(parsed, pad_enum)
+
+    cols_with_ops =
+      Enum.zip_with(padded, &Function.identity/1)
+      |> Enum.chunk_by(fn row -> Enum.all?(row, &(&1 == " ")) end)
+      |> Enum.reject(fn chunk ->
+        chunk |> hd() |> Enum.all?(&(&1 == " "))
+      end)
+      |> Stream.map(fn col ->
+        op = Enum.map(col, &Enum.at(&1, -1)) |> Enum.join() |> String.trim()
+        {op, col}
+      end)
+      |> Stream.filter(fn {op, _} -> op in ["+", "*"] end)
+
+    cols_with_ops
     |> Stream.map(fn {op, col} ->
-      clean_cols = col
+      chunk_size = col |> hd() |> length()
 
       for n <- col, m <- n do
         case(Integer.parse(m)) do
@@ -42,10 +57,9 @@ defmodule Aoc.Day6 do
           _ -> nil
         end
       end
-      |> Enum.chunk_every(4)
+      |> Enum.chunk_every(chunk_size)
       |> Enum.map(fn col -> Enum.filter(col, &(&1 != nil)) end)
       |> Enum.map(&Integer.undigits/1)
-      # need a reverse somewhere?
       |> then(fn nums ->
         case op do
           "+" -> Enum.sum(nums)
@@ -54,6 +68,5 @@ defmodule Aoc.Day6 do
       end)
     end)
     |> Enum.sum()
-    |> IO.inspect()
   end
 end
