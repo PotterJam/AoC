@@ -35,6 +35,41 @@ defmodule Aoc.Day7 do
     MapSet.size(matching) + splitter(rest, new_indices)
   end
 
-  def solve_pt2(_input) do
+  def solve_pt2(input) do
+    [start | rest] =
+      input
+      |> Stream.map(&String.trim/1)
+      |> Stream.map(&String.graphemes/1)
+      |> Enum.to_list()
+
+    start_index = start |> Enum.find_index(&(&1 == "S"))
+
+    2 * splitter2(rest, MapSet.new([start_index]))
+  end
+
+  defp splitter2([], _), do: 1
+
+  defp splitter2([next | rest], indices) do
+    splits =
+      next
+      |> Enum.with_index()
+      |> Enum.reduce(MapSet.new(), fn
+        {"^", i}, acc -> MapSet.put(acc, i)
+        {_, _}, acc -> acc
+      end)
+
+    matching = MapSet.intersection(indices, splits)
+    non_matching = MapSet.difference(indices, splits)
+
+    split_indices =
+      matching
+      |> Enum.flat_map(fn i -> [i - 1, i + 1] end)
+      |> MapSet.new()
+
+    new_indices = MapSet.union(non_matching, split_indices)
+
+    new_timelines = if MapSet.size(matching) > 0, do: MapSet.size(matching), else: 1
+
+    new_timelines * splitter2(rest, new_indices)
   end
 end
