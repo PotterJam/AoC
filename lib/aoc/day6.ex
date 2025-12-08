@@ -1,6 +1,4 @@
 defmodule Aoc.Day6 do
-  alias List.Chars
-
   def solve_pt1(input) do
     parsed =
       input
