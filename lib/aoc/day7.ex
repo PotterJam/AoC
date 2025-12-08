@@ -44,12 +44,14 @@ defmodule Aoc.Day7 do
 
     start_index = start |> Enum.find_index(&(&1 == "S"))
 
-    2 * splitter2(rest, MapSet.new([start_index]))
+    find_paths(rest, %{start_index => 1})
   end
 
-  defp splitter2([], _), do: 1
+  defp find_paths([], path_counts) do
+    path_counts |> Map.values() |> Enum.sum()
+  end
 
-  defp splitter2([next | rest], indices) do
+  defp find_paths([next | rest], path_counts) do
     splits =
       next
       |> Enum.with_index()
@@ -58,18 +60,21 @@ defmodule Aoc.Day7 do
         {_, _}, acc -> acc
       end)
 
-    matching = MapSet.intersection(indices, splits)
-    non_matching = MapSet.difference(indices, splits)
+    new_path_counts =
+      path_counts
+      |> Enum.flat_map(fn {idx, count} ->
+        if MapSet.member?(splits, idx) do
+          [{idx - 1, count}, {idx + 1, count}]
+        else
+          [{idx, count}]
+        end
+      end)
 
-    split_indices =
-      matching
-      |> Enum.flat_map(fn i -> [i - 1, i + 1] end)
-      |> MapSet.new()
+    deduped_counts =
+      new_path_counts
+      |> Enum.group_by(fn {idx, _} -> idx end, fn {_, count} -> count end)
+      |> Map.new(fn {idx, counts} -> {idx, Enum.sum(counts)} end)
 
-    new_indices = MapSet.union(non_matching, split_indices)
-
-    new_timelines = if MapSet.size(matching) > 0, do: MapSet.size(matching), else: 1
-
-    new_timelines * splitter2(rest, new_indices)
+    find_paths(rest, deduped_counts)
   end
 end
